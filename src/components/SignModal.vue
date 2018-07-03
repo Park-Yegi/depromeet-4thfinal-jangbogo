@@ -1,16 +1,17 @@
 <template>
   <transition name="modal">
-    <div class="modal-mask" v-on:click="temp">
+    <div class="modal-mask" v-on:click.stop.prevent="temp">
       <div class="modal-wrapper">
         <div class="modal-container">
           <div class="slot" slot="header">
                 <div class="wrapper">
-                    <span id="signup">회원가입</span>
-                    <span id="signin">로그인</span>
+                    <span id="signup" v-on:click="toggleSignUp" v-bind:class="{inactive : !signState}">회원가입</span>
+                    <span id="signin" v-on:click="toggleSignIn" v-bind:class="{inactive : signState}">로그인</span>
                 </div>
                 <!-- v-on:click="showModal = false -->
             </div>
-            <div class="slot" slot="body">
+            <!-- 회원가입 -->
+            <div class="slot" slot="body" v-if="signState">
                 <div class="wrapper">
                     <div class="inputbox id">
                         <input type="text" placeholder="아이디" v-model="email">
@@ -65,8 +66,28 @@
                     </div>  
                 </div>
                 <div class="wrapper">
-                    <div class="submit" v-on:click="postUserInfoToServer">
+                    <div class="submit" v-on:click="postSignUpToServer">
                         회원가입
+                    </div>
+                </div>
+            </div>
+            <!-- 로그인 -->
+            <div class="slot" slot="body" v-if="!signState">
+                 <div class="wrapper">
+                    <div class="inputbox id">
+                        <input type="text" placeholder="아이디" v-model="email">
+                        <i class="fas fa-check"></i>
+                    </div>
+                </div>
+                <div class="wrapper">
+                    <div class="inputbox ps">
+                        <input type="password" placeholder="비밀번호" v-model="password">
+                        <i class="fas fa-check"></i>
+                    </div>
+                </div>
+                <div class="wrapper">
+                    <div class="submit" v-on:click="postSignInToServer">
+                        로그인
                     </div>
                 </div>
             </div>
@@ -81,36 +102,41 @@
 import { mapState, mapGetters, mapMutations, mapActions } from 'vuex'
 
 export default {
+    data(){
+        return {
+            signState : true // ?0:signup, 1:signin
+        }
+    },
     computed: {
         email: {
-            get(){ return this.$store.getters["signup/getEmail"]; },
+            get(){ return this.$store.getters["sign/getEmail"]; },
             set( value ){ 
-                this.$store.commit("signup/setEmail", value); 
-                this.$store.commit("signup/checkEmailValid");
+                this.$store.commit("sign/setEmail", value); 
+                this.$store.commit("sign/checkEmailValid");
             }
         },
         password: {
-            get(){ return this.$store.getters["signup/getPassword"]; },
+            get(){ return this.$store.getters["sign/getPassword"]; },
             set( value ){
-                this.$store.commit("signup/setPassword", value); 
-                this.$store.commit("signup/checkPasswordVaild");
+                this.$store.commit("sign/setPassword", value); 
+                this.$store.commit("sign/checkPasswordVaild");
             }
         },
         passwordCheck: {
-            get(){ return this.$store.getters["signup/getPasswordCheck"]},
+            get(){ return this.$store.getters["sign/getPasswordCheck"]},
             set( value ){
-                this.$store.commit("signup/setPasswordCheck", value);
-                this.$store.commit("signup/checkPasswordSame")
+                this.$store.commit("sign/setPasswordCheck", value);
+                this.$store.commit("sign/checkPasswordSame")
             }
         },
         age: {
-            get(){return this.$store.getters["signup/getAge"]},
+            get(){return this.$store.getters["sign/getAge"]},
             set( value ){
-                this.$store.commit("signup/setAge", value);
-                this.$store.commit("signup/checkAgeValid");
+                this.$store.commit("sign/setAge", value);
+                this.$store.commit("sign/checkAgeValid");
             }
         },
-        ...mapGetters("signup", {
+        ...mapGetters("sign", {
             getEmail: "getEmail",
             getPassword: "getPassword",
             getSex: "getSexState",
@@ -118,24 +144,35 @@ export default {
     },
     methods:{
         temp(){
-            console.log('click');
+            console.log("click");
         },
-        ...mapMutations("signup", {
+        toggleSignUp(){
+            if(this.signState !== true){
+                this.signState = !this.signState;
+                this.$store.commit("sign/StateInit");
+            }
+        },
+        toggleSignIn(){
+            if(this.signState !== false){
+                this.signState = !this.signState;
+                this.$store.commit("sign/StateInit");
+            }
+        },
+        ...mapMutations("sign", {
             toggleFemale: "toggleFemale",
             toggleMale: "toggleMale",
             setPostCode: "setPostCode",
             setRoadAddress: "setRoadAddress",
             setJibunAddress: "setJibunAddress"
         }),
-        ...mapActions("signup", {
-            postUserInfoToServer : 'postUserInfoToServer',
+        ...mapActions("sign", {
+            postSignUpToServer : 'postSignUpToServer',
+            postSignInToServer : 'postSignInToServer'
         }),
         execDaumPostcode() {
             var getComponent = this;
             new daum.Postcode({
                 oncomplete(data) {
-                    // console.log(getComponent.setPostCode)
-                    // getComponent.setPostCode('1', {root:true});
                     // 팝업에서 검색결과 항목을 클릭했을때 실행할 코드를 작성하는 부분.
                     // 도로명 주소의 노출 규칙에 따라 주소를 조합한다.
                     // 내려오는 변수가 값이 없는 경우엔 공백('')값을 가지므로, 이를 참고하여 분기 한다.
@@ -262,13 +299,15 @@ export default {
 #signin{
     position: relative;
     left: 16px;
-    color: #d5d5d5;
     font-size: 24px;
     font-weight: bold;
 }
 #signup{
     font-size: 24px;
     font-weight: bold;
+}
+.inactive{
+    color: #d5d5d5;
 }
 .inputbox{
     border: solid 1px #979797;

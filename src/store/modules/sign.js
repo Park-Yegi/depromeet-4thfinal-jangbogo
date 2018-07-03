@@ -1,3 +1,5 @@
+import axios from 'axios';
+
 export default{
     namespaced : true,
     state: {
@@ -124,7 +126,7 @@ export default{
             if(state.sex != 1)
                 state.sex = !state.sex;
         },
-        checkAllFormValid(state){
+        checkSignUpFormValid(state){
             //TODO
             //빈칸 검사
             //이메일 길이
@@ -151,54 +153,133 @@ export default{
                 return false;
             }
             state.isAllFormVaild = true;
+        },
+        checkSignInFormValid(state){
+            if(!state.isValidEmail){
+				alert("check your email");
+			    return false;
+			}
+		    if(!state.isValidPassword){
+			    alert("check your password");
+			    return false;
+            }
+            state.isAllFormVaild = true;
+        },
+        StateInit(state){
+            state.email = '', 		  	 // 유저가 입력한 이메일
+            state.isValidEmail = false, 	 // 해당 이메일 유효체크
+            state.password = '', 		  	 // 유저가 입력한 비밀번호
+            state.isValidPassword = false, // 해당 비밀번호 유효체크
+            state.passwordCheck = '',   	 // 비밀번호 재입력
+            state.isPasswordCheckSame = false,// 재입력 비밀번호 체크
+            state.age = '',
+            state.isValidAge = false,
+            state.sex = false,             //0이면 여성, 1이면 남성, default 0
+            state.postcode = '',
+            state.roadAddress = '',
+            state.jibunAddress = '',
+            state.isAllFormVaild = false
         }
     },
     actions: {
-        //Todo : 서버에서 해당 아이디가 존재하는지 체크
         checkUserIdOverlaped ( context ){
-
+            //Todo : 서버에서 해당 아이디가 존재하는지 체크
         },
         getUserRandomNickName ( context ){
             // 유저의 랜덤 닉네임을 받기 위한 server api call
-        },
-        postUserInfoToServer ( context )
-        {
-            context.commit('checkAllFormValid')
+            console.log('getUserRandomNickName')
+            let baseURI = 'http://52.78.159.170/auth/nickname';
+            // let data = {};
+            axios.get(baseURI, {
+                headers :
+                {
+                  'Content-Type': 'application/json'
+                }
+              })
+              .then((result) => {
+                  console.log("success")
+                  console.log(result)
 
-            //유저 등록을 위한 server api call
+              })
+              .catch((error) => {
+                    console.log("fail")
+                  console.log(error)
+              })
+        },
+        // 회원가입 server api call
+        postSignUpToServer ( context )
+        {
+            context.commit('checkSignUpFormValid')
+
             if(context.state.isAllFormVaild)
             {
                 console.log('all form are valid')
-                let baseURI = 'http://52.78.159.170/auth/join/';
+                let baseURI = 'http://52.78.159.170/auth/join';
                 let data = {
                 	"uid" : context.state.email,
                 	"password" : context.state.password,
-                	"gender" : context.state.sex? 0:"female", 1:"male",
-                	"address" : "경기도 수원시",
-                	"age" : 23,
+                	"gender" : context.state.sex? "gender": "female", "gender": "male",
+                	"address" : context.state.jibunAddress + '||' + context.state.postcode,
+                	"age" : context.state.age,
                 	"shoppingType" : ["맥주", "안주"],
-                	"nickname" : "test nickname"
+                    "nickname" : context.dispatch('getUserRandomNickName')
+                    // "nickname" : "testNick"
                 };
-            
-                // axios.post(baseURI, JSON.stringify(data), {
-                //   headers :
-                //   {
-                // 	'Content-Type': 'application/json'
-                //   }
-                // })
-                // .then((result) => {
-                // 	console.log("success")
-                // 	console.log(result)
 
-                // })
-                // .catch((error) => {
-                //   	console.log("fail")
-                // 	console.log(error)
-                // })
+                console.log(data);
+            
+                axios.post(baseURI, JSON.stringify(data), {
+                  headers :
+                  {
+                	'Content-Type': 'application/json'
+                  }
+                })
+                .then((result) => {
+                	console.log("success")
+                	console.log(result)
+
+                })
+                .catch((error) => {
+                  	console.log("fail")
+                	console.log(error)
+                })
             }else{
                 console.log('all form are not valid')
             }
         },
+        // 로그인 server api call
+        postSignInToServer ( context ){
+            console.log('postSignInToServer')
 
+            context.commit('checkSignInFormValid');
+            //유저 등록을 위한 server api call
+            if(context.state.isAllFormVaild)
+            {
+                console.log('all form are valid')
+                let baseURI = 'http://52.78.159.170/auth/login';
+                let data = {
+                	"uid" : context.state.email,
+                	"password" : context.state.password,
+                };
+            
+                axios.post(baseURI, JSON.stringify(data), {
+                  headers :
+                  {
+                	'Content-Type': 'application/json'
+                  }
+                })
+                .then((result) => {
+                	console.log("success")
+                	console.log(result)
+
+                })
+                .catch((error) => {
+                  	console.log("fail")
+                	console.log(error)
+                })
+            }else{
+                console.log('all form are not valid')
+            }
+        }
     }
 }
