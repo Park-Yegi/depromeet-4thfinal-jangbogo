@@ -7,11 +7,23 @@
 
 <script>
 export default {
-  name: 'App'
+  name: 'App',
 }
 </script>
 
 <style>
+
+/* initialize css */
+* {
+  margin: 0 auto;
+  padding: 0;
+  font-family: 'Spoqa Han Sans', 'Spoqa Han Sans JP', 'Sans-serif';
+}
+
+a {
+  text-decoration: none;
+}
+
 html, body {
   width: 100%;
   height: 100%;
@@ -21,7 +33,7 @@ html, body {
 #app {
   width: 100%;
   height: 100%;
-  font-family: 'Avenir', Helvetica, Arial, sans-serif;
+  /* font-family: 'Avenir', Helvetica, Arial, sans-serif; */
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
   text-align: center;
