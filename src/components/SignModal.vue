@@ -1,33 +1,32 @@
 <template>
   <transition name="modal">
-    <div class="modal-mask" v-on:click.stop.prevent="temp">
+    <div class="modal-mask" @click="turnOffModal">
       <div class="modal-wrapper">
-        <div class="modal-container">
+        <div class="modal-container" @click.stop>
           <div class="slot" slot="header">
                 <div class="wrapper">
-                    <span id="signup" v-on:click="toggleSignUp" v-bind:class="{inactive : !signState}">회원가입</span>
-                    <span id="signin" v-on:click="toggleSignIn" v-bind:class="{inactive : signState}">로그인</span>
+                    <span id="signup" v-on:click="toggleSignUp" v-bind:class="{inactive : getSignState === 1}">회원가입</span>
+                    <span id="signin" v-on:click="toggleSignIn" v-bind:class="{inactive : getSignState === 0}">로그인</span>
                 </div>
-                <!-- v-on:click="showModal = false -->
             </div>
             <!-- 회원가입 -->
-            <div class="slot" slot="body" v-if="signState">
+            <div class="slot" slot="body" v-if="getSignCondition === 'signUp'">
                 <div class="wrapper">
                     <div class="inputbox id">
                         <input type="text" placeholder="아이디" v-model="email">
-                        <i class="fas fa-check"></i>
+                        <i class="fas" v-bind:class="{'fa-times' : !getIsValidEmail, 'fa-check' : getIsValidEmail}"></i>
                     </div>
                 </div>
                 <div class="wrapper">
                     <div class="inputbox ps">
                         <input type="password" placeholder="비밀번호" v-model="password">
-                        <i class="fas fa-check"></i>
+                        <i class="fas" v-bind:class="{'fa-times' : !getIsValidPassword, 'fa-check' : getIsValidPassword}"></i>
                     </div>
                 </div>
                 <div class="wrapper">
                     <div class="inputbox ps_check">
                         <input type="password" placeholder="비밀번호 확인" v-model="passwordCheck">
-                        <i class="fas fa-check"></i>
+                        <i class="fas" v-bind:class="{'fa-times' : !getIsPasswordCheckSame, 'fa-check' : getIsPasswordCheckSame}"></i>
                     </div>
                 </div>
                 <div class="wrapper">
@@ -39,8 +38,9 @@
                 <div class="notice">익명성을 보장하기 위해 닉네임은 장보고가 설정해드려요.</div>
                 <div wrapper>
                     <div class="inputbox age">
-                        <input type="text" placeholder="출생년도" v-model="age">
-                        <i class="fas fa-check"></i>
+                        <!-- <input type="text" placeholder="출생년도" v-model="age"> -->
+                        <select id="ageSelect"></select>
+                        <i class="fas" v-bind:class="{'fa-times' : !getIsValidAge, 'fa-check' : getIsValidAge}"></i>
                     </div>
                     <div class="inputbox sex" v-bind:class="{checked : getSex == 0}" v-on:click="toggleFemale">여자</div>
                     <div class="inputbox sex" v-bind:class="{checked : getSex == 1}" v-on:click="toggleMale">남자</div>
@@ -60,29 +60,26 @@
                     </div>  
                 </div>
                 <div class="wrapper">
-                    <div class="inputbox address">
-                        <input type="text" id="sample4_jibunAddress" placeholder="상세 주소">
-                        <i class="fas fa-check"></i>
-                    </div>  
-                </div>
-                <div class="wrapper">
                     <div class="submit" v-on:click="postSignUpToServer">
                         회원가입
                     </div>
                 </div>
             </div>
+            <!-- 태그 선택 -->
+            <div class="slot" slot="body" v-if="getSignCondition === 'selectTag'">
+                
+            </div>
+
             <!-- 로그인 -->
-            <div class="slot" slot="body" v-if="!signState">
+            <div class="slot" slot="body" v-if="getSignCondition === 'signIn'">
                  <div class="wrapper">
                     <div class="inputbox id">
                         <input type="text" placeholder="아이디" v-model="email">
-                        <i class="fas fa-check"></i>
                     </div>
                 </div>
                 <div class="wrapper">
                     <div class="inputbox ps">
                         <input type="password" placeholder="비밀번호" v-model="password">
-                        <i class="fas fa-check"></i>
                     </div>
                 </div>
                 <div class="wrapper">
@@ -104,71 +101,109 @@ import { mapState, mapGetters, mapMutations, mapActions } from 'vuex'
 export default {
     data(){
         return {
-            signState : true // ?0:signup, 1:signin
+ 
         }
+    },
+    mounted() {
+        this.addAgeOption();
     },
     computed: {
         email: {
-            get(){ return this.$store.getters["sign/getEmail"]; },
+            get(){ 
+                return this.$store.getters[(this.getSignState === 0 ? "signup":"signin") + "/getEmail"]; 
+            },
             set( value ){ 
-                this.$store.commit("sign/setEmail", value); 
-                this.$store.commit("sign/checkEmailValid");
+                this.$store.commit((this.getSignState === 0 ? "signup":"signin") + "/setEmail", value); 
+                this.$store.commit((this.getSignState === 0 ? "signup":"signin") + "/checkEmailValid");
             }
         },
         password: {
-            get(){ return this.$store.getters["sign/getPassword"]; },
+            get(){ 
+                return this.$store.getters[(this.getSignState === 0 ? "signup":"signin") + "/getPassword"]; 
+            },
             set( value ){
-                this.$store.commit("sign/setPassword", value); 
-                this.$store.commit("sign/checkPasswordVaild");
+                this.$store.commit((this.getSignState === 0 ? "signup":"signin") + "/setPassword", value); 
+                this.$store.commit((this.getSignState === 0 ? "signup":"signin") + "/checkPasswordVaild");
             }
         },
         passwordCheck: {
-            get(){ return this.$store.getters["sign/getPasswordCheck"]},
+            get(){ return this.$store.getters["signup/getPasswordCheck"]},
             set( value ){
-                this.$store.commit("sign/setPasswordCheck", value);
-                this.$store.commit("sign/checkPasswordSame")
+                this.$store.commit("signup/setPasswordCheck", value);
+                this.$store.commit("signup/checkPasswordSame")
             }
         },
         age: {
-            get(){return this.$store.getters["sign/getAge"]},
+            get(){return this.$store.getters["signup/getAge"]},
             set( value ){
-                this.$store.commit("sign/setAge", value);
-                this.$store.commit("sign/checkAgeValid");
+                this.$store.commit("signup/setAge", value);
+                this.$store.commit("signup/checkAgeValid");
+            }
+        },
+        getSignCondition(){
+            //object를 vuex로부터 받아와 SignUp의 현재 상태체크
+            let signUpState;
+            this.getSignUpState.forEach(value => {
+                if(value.state === true){
+                    signUpState = value.name;
+                }
+            });
+
+            if(this.getSignState === 0){
+                if(signUpState === "signUp"){
+                    return "signUp"
+                }else if (signUpState === "selectTag"){
+                    return "selectTag"
+                }
+            }else if (this.getSignState === 1){
+                return "signIn"
             }
         },
         ...mapGetters("sign", {
+            getSignState: "getSignState",
+            getSignUpState: "getSignUpState"
+        }),
+        ...mapGetters("signup", {
             getEmail: "getEmail",
             getPassword: "getPassword",
             getSex: "getSexState",
+            getIsValidEmail: "getIsValidEmail",
+            getIsValidPassword: "getIsValidPassword",
+            getIsPasswordCheckSame: "getIsPasswordCheckSame",
+            getIsValidAge: "getIsValidAge"
         }),
     },
     methods:{
-        temp(){
-            console.log("click");
+        addAgeOption(){
+            if(this.getSignState === 0){
+                let select = document.getElementById("ageSelect")
+                var option;
+                for (var i = 12; i <= 50; i++)
+                {
+                    option = document.createElement("option");
+                    option.text = i;
+                    console.log(select);
+                    select.appendChild(option);
+                }
+            }
+        },
+        turnOffModal(){
+            console.log('turnOffModal');
+            this.$emit("turnOffModal");
         },
         toggleSignUp(){
-            if(this.signState !== true){
-                this.signState = !this.signState;
-                this.$store.commit("sign/StateInit");
+            //로그인 창일 때
+            if(this.getSignState === 1){
+                this.setSignState(0);
+                this.addAgeOption();
             }
         },
         toggleSignIn(){
-            if(this.signState !== false){
-                this.signState = !this.signState;
-                this.$store.commit("sign/StateInit");
+            //회원가입 창일 때
+            if(this.getSignState === 0){
+                this.setSignState(1);
             }
         },
-        ...mapMutations("sign", {
-            toggleFemale: "toggleFemale",
-            toggleMale: "toggleMale",
-            setPostCode: "setPostCode",
-            setRoadAddress: "setRoadAddress",
-            setJibunAddress: "setJibunAddress"
-        }),
-        ...mapActions("sign", {
-            postSignUpToServer : 'postSignUpToServer',
-            postSignInToServer : 'postSignInToServer'
-        }),
         execDaumPostcode() {
             var getComponent = this;
             new daum.Postcode({
@@ -200,10 +235,10 @@ export default {
                     // 우편번호와 주소 정보를 해당 필드에 넣는다.
                     getComponent.setPostCode(data.zonecode);
                     getComponent.setRoadAddress(fullRoadAddr);
-                    getComponent.setJibunAddress(data.jibunAddress);
+                    // getComponent.setJibunAddress(data.jibunAddress);
                     document.getElementById('sample4_postcode').value = data.zonecode; //5자리 새우편번호 사용
                     document.getElementById('sample4_roadAddress').value = fullRoadAddr;
-                    document.getElementById('sample4_jibunAddress').value = data.jibunAddress;
+                    // document.getElementById('sample4_jibunAddress').value = data.jibunAddress;
 
                     // 사용자가 '선택 안함'을 클릭한 경우, 예상 주소라는 표시를 해준다.
                     if(data.autoRoadAddress) {
@@ -220,7 +255,21 @@ export default {
                     }
                 }
             }).open();
-        }
+        },
+        ...mapMutations("sign", {
+            setSignState: 'setSignState',
+        }),
+        ...mapMutations("signup", {
+            toggleFemale: "toggleFemale",
+            toggleMale: "toggleMale",
+            setPostCode: "setPostCode",
+            setRoadAddress: "setRoadAddress",
+            setJibunAddress: "setJibunAddress"
+        }),
+        ...mapActions("signup", {
+            postSignUpToServer : 'postSignUpToServer',
+            postSignInToServer : 'postSignInToServer'
+        }),
     }
 }
 </script>
@@ -337,7 +386,7 @@ export default {
     display: inline-block;
     width: 184px;
 }
-.age > input{
+.age > select{
     width: 100px;
 }
 .age > i{
