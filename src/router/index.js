@@ -2,7 +2,7 @@ import Vue from 'vue'
 import Router from 'vue-router'
 import Login from '@/components/Login'
 import SignModal from '@/components/SignModal'
-import Main from '@/components/Main'
+import Home from '@/components/Home'
 
 Vue.use(Router)
 
@@ -11,8 +11,9 @@ export default new Router({
   routes: [
     {
       path: '/',
-      name: 'Main',
-      component: Main
+      name: 'Home',
+      // component: require('../components/Home.vue').default
+      component: Home
     },
     {
       path: '/login',
@@ -26,7 +27,7 @@ export default new Router({
     },
     {
       path: '/main',
-      component: Main
+      component: Home
     }
   ]
 })

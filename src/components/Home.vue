@@ -1,6 +1,7 @@
+<template>
 <div id="wrapper">
   <button v-on:click="signup" style="width:100px; height:100px;"></button>
-  <!-- <span><router-link v-bind:to="{ name: 'counter-page' }">Counter</router-link></span> -->
+  <span><router-link v-bind:to="{ name: 'counter-page' }">Counter</router-link></span>
         
   <SignModal v-if="showModal" @close="showModal = false">          
   </SignModal>
@@ -24,7 +25,7 @@ import Friend from './Friend.vue'
 import Tag from './Tag.vue'
 
 export default {
-  name: 'main',
+  name: 'home',
   components: { Header, Footer, Map, Friend, Tag, SignModal },
   data(){
     return{
