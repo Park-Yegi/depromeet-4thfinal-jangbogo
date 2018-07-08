@@ -65,16 +65,41 @@
                         다음
                     </div>
                 </div>
-                <div class="slot" slot="footer">
-                    <div>
-                        <span>이미 장보고에 가입하셨나요? </span>
-                        <span v-on:click="toggleSignIn"><u>로그인하기</u></span>
-                    </div>
-                </div>
+                
             </div>
             <!-- 태그 선택 -->
             <div class="slot" slot="body" v-if="getSignCondition === 'selectTag'">
-                
+                <div id="tagNotice">나에게 꼭 맞는 장보고러를 찾기 위해 선호하는 태그를 선택해주세요.</div>
+                <div class="wrapper">
+                    <div class="category">
+                        #식성
+                    </div>
+                    <div class="tagWrapper">
+                        <div class="tag">추천태그</div>
+                        <div class="tag">추천태그</div>
+                        <div class="tag">길이가 긴 태그</div>
+                        <div class="tag">추천태그</div>
+                        <div class="tag">추천태그</div>
+                        <div class="tag">길이가 긴 태그</div>
+                    </div>
+                </div>
+                <div class="wrapper">
+                    <div class="category">
+                        #식성
+                    </div>
+                    <div class="tagWrapper">
+                        <div class="tag">추천태그</div>
+                        <div class="tag">추천태그</div>
+                        <div class="tag">추천태그</div>
+                        <div class="tag">길이가 아주 아주 긴 태그</div>
+                        <div class="tag">추천태그</div>
+                        <div class="tag">길이가 긴 태그</div>
+                    </div>
+                </div>
+                <div class="wrapper multiContent">
+                    <div class="tagBtn">이전</div>
+                    <div class="tagBtn">회원가입 완료</div>
+                </div>
             </div>
 
             <!-- 로그인 -->
@@ -99,11 +124,18 @@
                         로그인
                     </div>
                 </div>
-                 <div class="slot" slot="footer">
-                    <div>
-                        <span>장보고가 처음이신가요? </span>
-                        <span v-on:click="toggleSignUp"><u>가입하기</u></span>
-                    </div>
+                 
+            </div>
+            <div class="slot" slot="footer" v-if="getSignCondition !== 'signIn'">
+                <div>
+                    <span>이미 장보고에 가입하셨나요? </span>
+                    <span v-on:click="toggleSignIn"><u>로그인하기</u></span>
+                </div>
+            </div>
+            <div class="slot" slot="footer" v-if="getSignCondition === 'signIn'">
+                <div>
+                    <span>장보고가 처음이신가요? </span>
+                    <span v-on:click="toggleSignUp"><u>가입하기</u></span>
                 </div>
             </div>
         </div>
@@ -454,11 +486,42 @@ div[slot="header"] > .wrapper{
 .address > input{
     width: 334px;
     float: left;
+    text-overflow: ellipsis;
 }
 .submit{
     text-align: center;
     padding: 15px 23px;
     background-color: #e8e8e8;
+}
+#tagNotice{
+    color: #828282;
+    text-align: center;
+    font-size: 16px;
+}
+.category{
+    font-size: 20px;
+    color: #828282;
+    margin-bottom: 16px;
+}
+.tagWrapper{
+    display: flex;
+    flex-wrap: wrap;
+}
+.tag{
+    border-radius: 5px;
+    background-color: #d8d8d8;
+    color: #828282;
+    padding: 8px 16px;
+    margin-right: 24px;
+    margin-bottom: 16px;
+}
+.tagBtn{
+    flex: 0 0 252px;
+    padding: 20px 0px;
+    text-align: center;
+    font-size: 20px;
+    color: #6f6f6f;
+    background-color: #dedede;
 }
 div[slot='footer']{
     margin-top: 10px;
