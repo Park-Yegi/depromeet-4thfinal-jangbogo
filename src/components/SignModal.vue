@@ -5,9 +5,9 @@
         <div class="modal-container" @click.stop>
             <div class="slot" slot="header">
                 <div class="wrapper" id="header">
-                    <span id="signup" v-on:click="toggleSignUp" v-bind:class="{inactive : getSignState === 1}">회원가입</span>
+                    <span id="signup">회원가입</span>
                     <!-- <span id="signin" v-on:click="toggleSignIn" v-bind:class="{inactive : getSignState === 0}">로그인</span> -->
-                    <i id="offBtn" class="fas fa-times"></i>
+                    <i id="offBtn" class="fas fa-times" v-on:click="turnOffModal"></i>
                 </div>
             </div>
             <!-- 회원가입 -->
@@ -61,7 +61,7 @@
                     </div>
                 </div>
                 <div class="wrapper">
-                    <div class="submit" v-on:click="setSignUpState('selectTag')">
+                    <div class="submit" v-on:click="()=>{if(checkSignUpFormValid()){setSignUpState('selectTag');}}">
                         다음
                     </div>
                 </div>
@@ -254,7 +254,7 @@ export default {
             //로그인 창일 때
             if(this.getSignState === 1){
                 this.setSignState(0);
-                this.addAgeOption();
+                // this.addAgeOption();
             }
         },
         toggleSignIn(){
@@ -340,6 +340,7 @@ export default {
             toggleFemale: "toggleFemale",
             toggleMale: "toggleMale",
             setUserAddress: "setUserAddress",
+            checkSignUpFormValid: "checkSignUpFormValid",
         }),
         ...mapMutations("selectTag",{
             setSelected: "setSelected",

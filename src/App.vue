@@ -15,6 +15,7 @@ export default {
 * {
   /* margin: 0 auto;
   padding: 0; */
+  margin: 0px;
   font-family: 'Spoqa Han Sans', 'Spoqa Han Sans JP', 'Sans-serif';
 }
 a {

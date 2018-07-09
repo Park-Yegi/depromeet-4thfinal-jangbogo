@@ -120,11 +120,6 @@ export default{
                 state.sex = !state.sex;
         },
         checkSignUpFormValid(state){
-            //TODO
-            //빈칸 검사
-            //이메일 길이
-            //PW 길이 및 PWCHECK와 같은지
-            alert('checkAllForm')
             if(!state.isValidEmail){
 				alert("check your email");
 			    return false;
@@ -195,8 +190,6 @@ export default{
         // 회원가입 server api call
         postSignUpToServer ( context )
         {
-            context.commit('checkSignUpFormValid')
-
             if(context.state.isAllFormVaild)
             {
                 console.log('all form are valid')

@@ -3,6 +3,7 @@ import Router from 'vue-router'
 import Login from '@/components/Login'
 import SignModal from '@/components/SignModal'
 import Main from '@/components/Main'
+import Chat from '@/components/Chat'
 
 Vue.use(Router)
 
@@ -23,6 +24,11 @@ export default new Router({
       path: '/SignModal',
       name: 'SignModal',
       component: SignModal
+    },
+    {
+      path: '/Chat',
+      name: 'Chat',
+      component: Chat
     },
     {
       path: '/main',

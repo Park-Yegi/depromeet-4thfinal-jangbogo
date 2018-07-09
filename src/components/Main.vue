@@ -2,7 +2,7 @@
     <div>
         <button v-on:click="turnOnModal(0)" style="width:100px; height:100px;">회원가입</button>
         <button v-on:click="turnOnModal(1)" style="width:100px; height:100px;">로그인</button>
-        <!-- <span><router-link v-bind:to="{ name: 'counter-page' }">Counter</router-link></span> -->
+        <span><router-link v-bind:to="{ name: 'Chat' }">Chat</router-link></span>
         
         <SignModal v-on:turnOffModal="turnOffModal"  
                    v-if="showModal">   
