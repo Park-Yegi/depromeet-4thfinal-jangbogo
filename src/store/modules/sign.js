@@ -14,16 +14,21 @@ export default{
         },
         getSignUpState( state ){
             return state.signUpState;
-            // state.signUpState.forEach(value, index => {
-            //     if(value.state === true){
-            //         return state.signUpState[index].name;
-            //     }
-            // });
+            
         }
     },
     mutations: {
         setSignState( state, payload ){
             state.signState = payload;
+        },
+        setSignUpState( state, payload ){
+            state.signUpState.forEach(value =>{
+                value.state = false;
+
+                if(value.name === payload){
+                    value.state = true;
+                }
+            }) 
         }
     }
 }

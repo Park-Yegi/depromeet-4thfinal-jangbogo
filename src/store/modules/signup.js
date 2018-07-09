@@ -3,7 +3,6 @@ import axios from 'axios';
 export default{
     namespaced : true,
     state: {
-        signState : 0,           // 0는 signup(회원가입), 1은 signin(로그인)
         email : '', 		  	 // 유저가 입력한 이메일
 		isValidEmail : false, 	 // 해당 이메일 유효체크
 		password : '', 		  	 // 유저가 입력한 비밀번호
@@ -13,15 +12,10 @@ export default{
         age : '',
         isValidAge : false,
         sex : false,             //0이면 여성, 1이면 남성, default 0
-        postcode : '',
-        roadAddress : '',
-        jibunAddress : '',
+        userAddress : '',
         isAllFormVaild : false,
     },
     getters: {
-        getSignState(state){
-            return state.signState;
-        },
         getEmail(state){
             return state.email;
         },
@@ -49,23 +43,14 @@ export default{
         getSexState(state){
             return state.sex;
         },
-        getPostcode(state){
-            return state.postcode;
-        },
-        getRoadAddress(state){
-            return state.roadAddress;
-        },
-        getJibunAddress(state){
-            return state.jibunAddress
+        getUserAddress(state){
+            return state.userAddress;
         },
         getIsAllFormValid(state){
             return state.isAllFormVaild;
         }
     },
     mutations: {
-        setSignState( state, payload ){
-            state.signState = payload;
-        },
         setEmail( state, payload ){
             state.email = payload;
         },
@@ -78,17 +63,9 @@ export default{
         setAge( state, payload ){
             state.age = payload;
         },
-        setPostCode( state, payload){
-            console.log("setPostCode call",payload)
-            state.postcode = payload;
-        },
-        setRoadAddress( state, payload){
+        setUserAddress( state, payload){
             console.log("setRoadAddress call",payload)
-            state.roadAddress = payload;
-        },
-        setJibunAddress( state, payload){
-            console.log("setJibunAddress call",payload)
-            state.jibunAddress = payload;
+            state.userAddress = payload;
         },
         checkEmailValid( state ){
             //아이디 체크 정규표현식 (숫자, 영문조합 10~15자)
@@ -228,7 +205,7 @@ export default{
                 	"uid" : context.state.email,
                 	"password" : context.state.password,
                 	"gender" : context.state.sex? "gender": "female", "gender": "male",
-                	"address" : context.state.jibunAddress + '||' + context.state.postcode,
+                	"address" : context.state.roadAddress,
                 	"age" : context.state.age,
                 	"shoppingType" : ["맥주", "안주"],
                     "nickname" : context.dispatch('getUserRandomNickName')
