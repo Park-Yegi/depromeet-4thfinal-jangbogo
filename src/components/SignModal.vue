@@ -75,12 +75,12 @@
                         #식성
                     </div>
                     <div class="tagWrapper">
-                        <div class="tag">추천태그</div>
-                        <div class="tag">추천태그</div>
-                        <div class="tag">길이가 긴 태그</div>
-                        <div class="tag">추천태그</div>
-                        <div class="tag">추천태그</div>
-                        <div class="tag">길이가 긴 태그</div>
+                        <div class="tag" 
+                        v-for="tag in fetchTags('ingredient')" 
+                        v-on:click="setSelected(tag)"
+                        v-bind:class="{select:getTagSeleted(tag)}"
+                        v-bind:key="tag.id">{{tag}}
+                        </div>
                     </div>
                 </div>
                 <div class="wrapper">
@@ -88,16 +88,16 @@
                         #식성
                     </div>
                     <div class="tagWrapper">
-                        <div class="tag">추천태그</div>
-                        <div class="tag">추천태그</div>
-                        <div class="tag">추천태그</div>
-                        <div class="tag">길이가 아주 아주 긴 태그</div>
-                        <div class="tag">추천태그</div>
-                        <div class="tag">길이가 긴 태그</div>
+                        <div class="tag" 
+                        v-for="tag in fetchTags('type')" 
+                        v-on:click="setSelected(tag)"
+                        v-bind:class="{select:getTagSeleted(tag)}"
+                        v-bind:key="tag.id">{{tag}}
+                        </div>
                     </div>
                 </div>
                 <div class="wrapper multiContent">
-                    <div class="tagBtn">이전</div>
+                    <div class="tagBtn" v-on:click="setSignUpState('signUp')">이전</div>
                     <div class="tagBtn">회원가입 완료</div>
                 </div>
             </div>
@@ -155,7 +155,7 @@ export default {
         }
     },
     mounted() {
-        this.addAgeOption();
+        // this.addAgeOption();
     },
     computed: {
         email: {
@@ -222,6 +222,10 @@ export default {
             getIsPasswordCheckSame: "getIsPasswordCheckSame",
             getIsValidAge: "getIsValidAge"
         }),
+        ...mapGetters("selectTag", {
+            getTags: "getTags",
+            getSelected: "getSelected",
+        })
     },
     methods:{
         addAgeOption(){
@@ -258,6 +262,26 @@ export default {
             if(this.getSignState === 0){
                 this.setSignState(1);
             }
+        },
+        fetchTags(tagNum){
+            let arr = [];
+            for(var index in this.getTags){
+                if(tagNum === index){
+                    arr = [...this.getTags[index]]
+                    return arr;
+                }
+            }
+            console.log("tag Index error");
+            return false;
+        },
+        getTagSeleted(tag){
+            // 태그 클릭 한 번에 8번의 호출 * 태그 갯수 => find the way to modify
+            for(var index in this.getSelected){
+                if(this.getSelected[index] === tag){
+                    return true;
+                }
+            }
+            return false;
         },
         execDaumPostcode() {
             var getComponent = this;
@@ -316,6 +340,9 @@ export default {
             toggleFemale: "toggleFemale",
             toggleMale: "toggleMale",
             setUserAddress: "setUserAddress",
+        }),
+        ...mapMutations("selectTag",{
+            setSelected: "setSelected",
         }),
         ...mapActions("signup", {
             postSignUpToServer : 'postSignUpToServer',
@@ -514,6 +541,9 @@ div[slot="header"] > .wrapper{
     padding: 8px 16px;
     margin-right: 24px;
     margin-bottom: 16px;
+}
+.select{
+    border: solid 1px red;
 }
 .tagBtn{
     flex: 0 0 252px;
