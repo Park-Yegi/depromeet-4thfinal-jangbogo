@@ -18,6 +18,9 @@ export default {
   margin: 0px;
   font-family: 'Spoqa Han Sans', 'Spoqa Han Sans JP', 'Sans-serif';
 }
+*:focus {
+  outline: none;
+}
 a {
   text-decoration: none;
 }

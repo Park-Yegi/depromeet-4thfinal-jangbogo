@@ -15,14 +15,13 @@
                 <div class="wrapper">
                     <div class="inputbox id">
                         <div class="name">아이디</div>
-                        <input type="text" placeholder="아이디" v-model="email">
-                    </div>
+                        <input type="text" placeholder="아이디" v-model="email" v-bind:class="getFormStateClass('email')"></div>
                     <div class="notice">일단 써봄</div>
                 </div>
                 <div class="wrapper">
                     <div class="inputbox ps">
                         <div class="name">비밀번호</div>
-                        <input type="password" placeholder="비밀번호" v-model="password">
+                        <input type="password" placeholder="비밀번호" v-model="password" v-bind:class="getFormStateClass('password')">
                         <!-- <i class="fas" v-bind:class="{'fa-times' : !getIsValidPassword, 'fa-check' : getIsValidPassword}"></i> -->
                     </div>
                     <div class="notice">일단 써봄</div>
@@ -30,7 +29,7 @@
                 <div class="wrapper">
                     <div class="inputbox ps_check">
                         <div class="name">비밀번호 확인</div>
-                        <input type="password" placeholder="비밀번호 확인" v-model="passwordCheck">
+                        <input type="password" placeholder="비밀번호 확인" v-model="passwordCheck"  v-bind:class="getFormStateClass('passwordCheck')">
                         <!-- <i class="fas" v-bind:class="{'fa-times' : !getIsPasswordCheckSame, 'fa-check' : getIsPasswordCheckSame}"></i> -->
                     </div>
                     <div class="notice">일단 써봄</div>
@@ -45,7 +44,7 @@
                 </div>
                 <div class="wrapper multiContent">
                     <div class="inputbox age">
-                        <select id="ageSelect"></select>
+                        <select id="ageSelect" v-model="age"></select>
                         <i class="fas" v-bind:class="{'fa-times' : !getIsValidAge, 'fa-check' : getIsValidAge}"></i>
                     </div>
                     <div class="inputbox sex" v-bind:class="{checked : getSex == 0}" v-on:click="toggleFemale">여자</div>
@@ -61,7 +60,7 @@
                     </div>
                 </div>
                 <div class="wrapper">
-                    <div class="submit" v-on:click="()=>{if(checkSignUpFormValid()){setSignUpState('selectTag');}}">
+                    <div class="submit" v-on:click="()=>{checkSignUpFormValid(); if(getIsAllFormValid){setSignUpState('selectTag');}}">
                         다음
                     </div>
                 </div>
@@ -98,7 +97,7 @@
                 </div>
                 <div class="wrapper multiContent">
                     <div class="tagBtn" v-on:click="setSignUpState('signUp')">이전</div>
-                    <div class="tagBtn">회원가입 완료</div>
+                    <div class="tagBtn" v-on:click="()=>{if(getSelectedNum >= 3){this.print('condition clear'); postSignUpToServer();}else{this.print('select Tags')}}">회원가입 완료</div>
                 </div>
             </div>
 
@@ -154,8 +153,8 @@ export default {
  
         }
     },
-    mounted() {
-        // this.addAgeOption();
+    updated() {
+        this.addAgeOption();
     },
     computed: {
         email: {
@@ -174,18 +173,23 @@ export default {
             set( value ){
                 this.$store.commit((this.getSignState === 0 ? "signup":"signin") + "/setPassword", value); 
                 this.$store.commit((this.getSignState === 0 ? "signup":"signin") + "/checkPasswordVaild");
+
+                if(this.getSignState === 0){
+                    this.$store.commit("signup/checkPasswordSame");
+                }
             }
         },
         passwordCheck: {
             get(){ return this.$store.getters["signup/getPasswordCheck"]},
             set( value ){
                 this.$store.commit("signup/setPasswordCheck", value);
-                this.$store.commit("signup/checkPasswordSame")
+                this.$store.commit("signup/checkPasswordSame");
             }
         },
         age: {
             get(){return this.$store.getters["signup/getAge"]},
             set( value ){
+                console.log('age', value);
                 this.$store.commit("signup/setAge", value);
                 this.$store.commit("signup/checkAgeValid");
             }
@@ -216,19 +220,27 @@ export default {
         ...mapGetters("signup", {
             getEmail: "getEmail",
             getPassword: "getPassword",
+            getPasswordCheck: "getPasswordCheck",
             getSex: "getSexState",
             getIsValidEmail: "getIsValidEmail",
             getIsValidPassword: "getIsValidPassword",
             getIsPasswordCheckSame: "getIsPasswordCheckSame",
-            getIsValidAge: "getIsValidAge"
+            getIsValidAge: "getIsValidAge",
+            getIsAllFormValid: "getIsAllFormValid"
         }),
         ...mapGetters("selectTag", {
             getTags: "getTags",
             getSelected: "getSelected",
+            getSelectedNum: "getSelectedNum",
         })
     },
     methods:{
+        print(args){
+            console.log(args);
+        },
+        // Sign Up Method
         addAgeOption(){
+            console.log('addAge');
             if(this.getSignState === 0){
                 let select = document.getElementById("ageSelect")
                 var option;
@@ -250,6 +262,42 @@ export default {
             console.log('turnOffModal');
             this.$emit("turnOffModal");
         },
+        toggleSignIn(){
+            //회원가입 창일 때
+            if(this.getSignState === 0){
+                this.setSignState(1);
+            }
+        },
+        getFormStateClass(form){
+            let getFormMethods = {
+                email : this.getEmail,
+                password : this.getPassword,
+                passwordCheck : this.getPasswordCheck,
+            }
+            let getValidMethods = {
+                email : this.getIsValidEmail,
+                password : this.getIsValidPassword,
+                passwordCheck : this.getIsPasswordCheckSame,
+            }
+
+            var keys = Object.keys(getFormMethods);
+            var getFormMethod;
+            var getValidMethod;
+
+            for(var index in keys){
+                if(form === keys[index]){
+                    getFormMethod = getFormMethods[keys[index]];
+                    getValidMethod = getValidMethods[keys[index]];
+                }
+            }
+            if(getFormMethod.length > 0){
+                return{
+                    'success' : getValidMethod,
+                    'error' : !getValidMethod,
+                }
+            }
+        },
+        // SignIn Method
         toggleSignUp(){
             //로그인 창일 때
             if(this.getSignState === 1){
@@ -257,12 +305,7 @@ export default {
                 // this.addAgeOption();
             }
         },
-        toggleSignIn(){
-            //회원가입 창일 때
-            if(this.getSignState === 0){
-                this.setSignState(1);
-            }
-        },
+        // SelectTag Method
         fetchTags(tagNum){
             let arr = [];
             for(var index in this.getTags){
@@ -462,6 +505,15 @@ div[slot="header"] > .wrapper{
     color: #c8c8c8;
     float: right;
 }
+.inputbox > input:focus{
+    border: solid 1px #333333;
+}
+.error{
+    border: solid 1px #e01f1f !important;
+}
+.success{
+    border: solid 1px #23b470 !important;
+}
 .inputbox > i{
     position: relative;
     left: 15px;
@@ -521,6 +573,13 @@ div[slot="header"] > .wrapper{
     padding: 15px 23px;
     background-color: #e8e8e8;
 }
+/* .submit:active{
+    background-color: red;
+    background-color: #c7c7c7 !important;
+}
+.submit:hover{
+    background-color: blue;
+} */
 #tagNotice{
     color: #828282;
     text-align: center;

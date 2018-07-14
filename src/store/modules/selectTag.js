@@ -13,6 +13,9 @@ export default{
         },
         getSelected(state){
             return state.selected;
+        },
+        getSelectedNum(state){
+            return state.selected.length;
         }
     },
     mutations:{

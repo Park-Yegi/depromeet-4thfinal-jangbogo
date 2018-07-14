@@ -1,3 +1,4 @@
+import selectTag from './selectTag';
 import axios from 'axios';
 
 export default{
@@ -101,7 +102,7 @@ export default{
         },
         checkAgeValid( state ){
             //TODO - 정규표현식 수정 (앞자리 19, 20)
-            let reg = new RegExp("^[0-9]{4}$");
+            let reg = new RegExp("^[0-9]{2}$");
             
             if(reg.test(state.age)){
                 console.log("age is vaild")
@@ -120,26 +121,27 @@ export default{
                 state.sex = !state.sex;
         },
         checkSignUpFormValid(state){
-            if(!state.isValidEmail){
-				alert("check your email");
-			    return false;
-			}
-		    if(!state.isValidPassword){
-			    alert("check your password");
-			    return false;
-		    }
-			if(!state.isPasswordCheckSame){
-				alert("passwordCheck is not same");
-			    return false;
-            }
-            if(!state.isValidAge){
-                alert("check your age");
-                return false;
-            }
-            if(state.roadAddress === ""){
-                alert("check your postcode")
-                return false;
-            }
+           
+            // if(!state.isValidEmail){
+			// 	// alert("check your email");
+			//     return false;
+			// }
+		    // if(!state.isValidPassword){
+			//     // alert("check your password");
+			//     return false;
+		    // }
+			// if(!state.isPasswordCheckSame){
+			// 	// alert("passwordCheck is not same");
+			//     return false;
+            // }
+            // if(!state.isValidAge){
+            //     // alert("check your age");
+            //     return false;
+            // }
+            // if(!(state.userAddress.length > 0)){
+            //     // alert("check your postcode")
+            //     return false;
+            // }
             state.isAllFormVaild = true;
         },
     },
@@ -190,40 +192,34 @@ export default{
         // 회원가입 server api call
         postSignUpToServer ( context )
         {
-            if(context.state.isAllFormVaild)
-            {
-                console.log('all form are valid')
-                let baseURI = 'http://52.78.159.170/auth/join';
-                let data = {
-                	"uid" : context.state.email,
-                	"password" : context.state.password,
-                	"gender" : context.state.sex? "gender": "female", "gender": "male",
-                	"address" : context.state.roadAddress,
-                	"age" : context.state.age,
-                	"shoppingType" : ["맥주", "안주"],
-                    "nickname" : context.dispatch('getUserRandomNickName')
-                };
+            console.log('postSignUpToServer')
+            let baseURI = 'http://52.78.159.170/auth/join';
+            let data = {
+             	"uid" : context.state.email,
+               	"password" : context.state.password,
+               	"gender" : context.state.sex? "gender": "female", "gender": "male",
+               	"address" : context.state.userAddress,
+               	"age" : context.state.age,
+               	"shoppingType" : ['이거 어떻게 받을지 생각'],
+                "nickname" : context.dispatch('getUserRandomNickName')
+            };
 
-                console.log(data);
+            console.log(data);
             
-                axios.post(baseURI, JSON.stringify(data), {
-                  headers :
-                  {
-                	'Content-Type': 'application/json'
-                  }
-                })
-                .then((result) => {
-                	console.log("success")
-                	console.log(result)
-
-                })
-                .catch((error) => {
-                  	console.log("fail")
-                	console.log(error)
-                })
-            }else{
-                console.log('all form are not valid')
-            }
+            axios.post(baseURI, JSON.stringify(data), {
+                headers :
+                {
+              	'Content-Type': 'application/json'
+                }
+            })
+            .then((result) => {
+               	console.log("success")
+               	console.log(result)
+            })
+            .catch((error) => {
+               	console.log("fail")
+               	console.log(error)
+            })
         },
        
     }

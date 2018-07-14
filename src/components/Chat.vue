@@ -66,7 +66,9 @@
                             <span class="text">안녕하세요~</span>
                         </div>
                     </div>
-                    <div id="meessageInput"></div>
+                    <div id="messageInput">
+                        <input type="text" placeholder="메세지를 입력하세요.">
+                    </div>
                 </div>
             </div>
         </div>
@@ -142,6 +144,7 @@ export default {
     margin-left:32px;
 }
 #messageLog{
+    height: 792px;
     padding: 24px;
 }
 .message{
@@ -201,7 +204,17 @@ export default {
     padding: 10px 16px;
 }
 #messageInput{
-    
+    height: 54px;
+    display: flex;
+    align-items: center;
+    border: solid 1px #cfcfcf;
 }
-
+#messageInput > input{
+    margin-left: 1px;
+    padding: 0px 24px;
+    border: none;
+    font-size: 16px;
+    color: #c8c8c8;
+    /* line-height: 55px; */
+}
 </style>
