@@ -1,7 +1,7 @@
 <template>
-<div id="wrapper">
-  
-</div>
+	<div id="wrapper">
+		<button> </button>
+	</div>
 </template>
 
 
@@ -14,8 +14,11 @@ export default {
 
 <style scoped>
 #wrapper {
-  width: 100%;
-  height: 60px;
+  width: 1920px;
+  height: 633px;
+  background-image: url("../assets/banner.png");
+  background-color: transparent;
 }
+
 
 </style>
