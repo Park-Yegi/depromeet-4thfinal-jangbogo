@@ -52,8 +52,7 @@
                 </div>
                 <div class="wrapper multiContent">
                     <div class="inputbox address">
-                        <input type="text" id="sample4_roadAddress">
-                        <!-- <i class="fas fa-check"></i> -->
+                        <input type="text" id="sample4_roadAddress" v-model="address">
                     </div>  
                     <div class="searchBtn" v-on:click="execDaumPostcode">
                         주소 찾기
@@ -97,7 +96,7 @@
                 </div>
                 <div class="wrapper multiContent">
                     <div class="tagBtn" v-on:click="setSignUpState('signUp')">이전</div>
-                    <div class="tagBtn" v-on:click="()=>{if(getSelectedNum >= 3){this.print('condition clear'); postSignUpToServer();}else{this.print('select Tags')}}">회원가입 완료</div>
+                    <div class="tagBtn" v-on:click="()=>{if(getSelectedNum >= 3){signUpComplete()}else{this.print('select Tags')}}">회원가입 완료</div>
                 </div>
             </div>
 
@@ -113,17 +112,16 @@
                 <div class="wrapper">
                     <div class="inputbox ps">
                         <div class="name">비밀번호</div>
-                        <input type="password" placeholder="비밀번호" v-model="password">
+                        <input type="password" placeholder="비밀번호" v-model="password" v-on:keyup.enter="signInCompelete">
                         <!-- <i class="fas" v-bind:class="{'fa-times' : !getIsValidPassword, 'fa-check' : getIsValidPassword}"></i> -->
                     </div>
                     <div class="notice">일단 써봄</div>
                 </div>
                 <div class="wrapper">
-                    <div class="submit" v-on:click="postSignInToServer">
+                    <div class="submit" v-on:click="signInCompelete">
                         로그인
                     </div>
                 </div>
-                 
             </div>
             <div class="slot" slot="footer" v-if="getSignCondition !== 'signIn'">
                 <div>
@@ -154,6 +152,7 @@ export default {
         }
     },
     updated() {
+        console.log('updated');
         this.addAgeOption();
     },
     computed: {
@@ -192,6 +191,12 @@ export default {
                 console.log('age', value);
                 this.$store.commit("signup/setAge", value);
                 this.$store.commit("signup/checkAgeValid");
+            }
+        },
+        address: {
+            get(){return this.$store.getters["signup/getUserAddress"]},
+            set( value ){
+                this.$store.commit("signup/setUserAddress", value);
             }
         },
         getSignCondition(){
@@ -297,6 +302,14 @@ export default {
                 }
             }
         },
+        signUpComplete(){
+            this.postSignUpToServer();
+            this.turnOffModal();
+            //데이터 초기화
+            this.initSignUpState();
+            this.initSignState();
+            this.initSelectTagState();
+        },
         // SignIn Method
         toggleSignUp(){
             //로그인 창일 때
@@ -304,6 +317,11 @@ export default {
                 this.setSignState(0);
                 // this.addAgeOption();
             }
+        },
+        signInCompelete(){
+            this.postSignInToServer();
+            this.initSignInState();
+            this.turnOffModal();
         },
         // SelectTag Method
         fetchTags(tagNum){
@@ -378,20 +396,28 @@ export default {
         ...mapMutations("sign", {
             setSignState: 'setSignState',
             setSignUpState: 'setSignUpState',
+            initSignState: 'initSignState',
         }),
         ...mapMutations("signup", {
             toggleFemale: "toggleFemale",
             toggleMale: "toggleMale",
             setUserAddress: "setUserAddress",
             checkSignUpFormValid: "checkSignUpFormValid",
+            initSignUpState: "initSignUpState",
         }),
         ...mapMutations("selectTag",{
             setSelected: "setSelected",
+            initSelectTagState: "initSelectTagState",
+        }),
+        ...mapMutations("signin",{
+            initSignInState: 'initSignInState',
         }),
         ...mapActions("signup", {
             postSignUpToServer : 'postSignUpToServer',
-            postSignInToServer : 'postSignInToServer'
         }),
+        ...mapActions("signin", {
+            postSignInToServer : 'postSignInToServer',
+        })
     }
 }
 </script>

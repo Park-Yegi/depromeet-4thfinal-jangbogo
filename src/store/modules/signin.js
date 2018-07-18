@@ -20,7 +20,7 @@ export default{
             return state.isEmailFormFull;
         },
         getPaswordFormFull( state ){
-            return stat.isPasswordFormFull;
+            return state.isPasswordFormFull;
         }   
     },
     mutations: {
@@ -63,48 +63,41 @@ export default{
             }
             state.isAllFormVaild = true;
         },
-        stateInit(state){
-            state.email= '',
-            state.isValidEmail= false,
-            state.password= '',
-            state.isValidPassword= false,
-            state.isAllFormVaild= false
+        initSignInState(state){
+            state.email= '';
+            state.isValidEmail= false;
+            state.password= '';
+            state.isValidPassword= false;
+            state.isAllFormVaild= false;
         }
     }, 
     actions: {
-         // 로그인 server api call
-         postSignInToServer ( context ){
+        // 로그인 server api call
+        postSignInToServer ( context ){
             console.log('postSignInToServer')
-
             context.commit('checkSignInFormValid');
-            //유저 등록을 위한 server api call
-            if(context.state.isAllFormVaild)
-            {
-                console.log('all form are valid')
-                let baseURI = 'http://52.78.159.170/auth/login';
-                let data = {
-                	"uid" : context.state.email,
-                	"password" : context.state.password,
-                };
-            
-                axios.post(baseURI, JSON.stringify(data), {
-                  headers :
-                  {
-                	'Content-Type': 'application/json'
-                  }
-                })
-                .then((result) => {
-                	console.log("success")
-                	console.log(result)
 
-                })
-                .catch((error) => {
-                  	console.log("fail")
-                	console.log(error)
-                })
-            }else{
-                console.log('all form are not valid')
-            }
+            //유저 로그인을 위한 server api call
+            console.log('all form are valid')
+            let baseURI = 'http://52.78.159.170/auth/login';
+            let data = {
+                "uid" : context.state.email,
+                "password" : context.state.password,
+            };    
+            axios.post(baseURI, JSON.stringify(data), {
+                headers :
+                {
+                'Content-Type': 'application/json'
+                }
+            })
+            .then((result) => {
+                console.log("success")
+                console.log(result)
+            })
+            .catch((error) => {
+                console.log("fail")
+                console.log(error)
+            })
         }
     }
 }

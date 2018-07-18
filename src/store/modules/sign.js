@@ -14,7 +14,6 @@ export default{
         },
         getSignUpState( state ){
             return state.signUpState;
-            
         }
     },
     mutations: {
@@ -29,6 +28,11 @@ export default{
                     value.state = true;
                 }
             }) 
+        },
+        initSignState( state ){
+            state.signState = 0;
+            state.signUpState[0].state = true;
+            state.signUpState[1].state = false;
         }
     }
 }

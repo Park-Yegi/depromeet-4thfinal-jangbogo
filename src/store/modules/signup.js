@@ -1,4 +1,3 @@
-import selectTag from './selectTag';
 import axios from 'axios';
 
 export default{
@@ -45,6 +44,7 @@ export default{
             return state.sex;
         },
         getUserAddress(state){
+            console.log(state.userAddress);
             return state.userAddress;
         },
         getIsAllFormValid(state){
@@ -144,6 +144,19 @@ export default{
             // }
             state.isAllFormVaild = true;
         },
+        initSignUpState(state){
+            state.email = ''; 		  	
+		    state.isValidEmail = false; 	 
+		    state.password = ''; 		  
+		    state.isValidPassword = false; 
+            state.passwordCheck = '';   	
+            state.isPasswordCheckSame = false;
+            state.age = '';
+            state.isValidAge = false;
+            state.sex = false;             
+            state.userAddress = '';
+            state.isAllFormVaild = false;
+        }
     },
     actions: {
         checkUserIdOverlaped ( context ){

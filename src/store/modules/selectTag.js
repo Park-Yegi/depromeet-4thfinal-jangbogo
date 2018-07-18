@@ -30,6 +30,9 @@ export default{
             //해당 태그가 없을 때, 추가
             state.selected.push(payload);
             return true;
+        },
+        initSelectTagState( state ){
+            state.selected = [];
         }
     },
     actions:{

@@ -26,11 +26,11 @@ export default {
             setSignState : 'setSignState'
         }),
         ...mapMutations('signin',{
-            stateInit : 'stateInit'
+            initSignInState : 'initSignInState'
         }),
         turnOffModal(){
             this.showModal = false;
-            this.stateInit();
+            this.initSignInState();
         },
         turnOnModal(state){
             this.showModal = true;
