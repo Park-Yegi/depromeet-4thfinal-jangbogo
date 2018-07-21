@@ -1,6 +1,6 @@
 <template>
   <div id="wrapper">
-	  <Tag v-for="item in items" :data="item" />
+	  <Tag v-for="item in items" :data="item" v-bind:key="item.key"></Tag>
   </div>
 </template>
 

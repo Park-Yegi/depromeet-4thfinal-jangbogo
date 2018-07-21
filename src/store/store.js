@@ -5,6 +5,7 @@ import sign   from './modules/sign'
 import signup from './modules/signup'
 import signin from './modules/signin'
 import selectTag from './modules/selectTag'
+import chat from './modules/chat'
 
 Vue.use(Vuex); 
 
@@ -14,6 +15,7 @@ export const store = new Vuex.Store({
 		signup,
 		signin,
 		selectTag,
+		chat,
 	},
 	
 })

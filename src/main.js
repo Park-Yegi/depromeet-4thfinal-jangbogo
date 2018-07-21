@@ -4,11 +4,13 @@ import Vue from 'vue'
 import { store } from './store/store'
 import App from './App'
 import router from './router'
-// import store from './store'
 import axios from 'axios'
+import VueSocketIO from 'vue-socket.io';
 
 Vue.prototype.$axios = axios
 Vue.config.productionTip = false
+
+Vue.use(VueSocketIO, '52.78.159.170', store);
 
 /* eslint-disable no-new */
 new Vue({

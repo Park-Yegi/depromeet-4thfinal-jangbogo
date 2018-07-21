@@ -15,8 +15,15 @@
   },
   "dependencies": {
     "axios": "^0.18.0",
+    "bufferutil": "^4.0.0",
+    "express": "^4.15.2",
+    "socket.io": "^2.1.1",
+    "socket.io-client": "^2.1.1",
+    "utf-8-validate": "^5.0.1",
+    "uws": "^10.148.1",
     "vue": "^2.5.2",
     "vue-router": "^3.0.1",
+    "vue-socket.io": "^2.1.1-b",
     "vuex": "^3.0.1"
   },
   "devDependencies": {

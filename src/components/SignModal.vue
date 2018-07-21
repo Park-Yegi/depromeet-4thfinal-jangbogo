@@ -5,8 +5,8 @@
         <div class="modal-container" @click.stop>
             <div class="slot" slot="header">
                 <div class="wrapper" id="header">
-                    <span id="signup">회원가입</span>
-                    <!-- <span id="signin" v-on:click="toggleSignIn" v-bind:class="{inactive : getSignState === 0}">로그인</span> -->
+                    <span v-if="getSignCondition === 'signUp'">회원가입</span>
+                    <span v-if="getSignCondition === 'signIn'">로그인</span>
                     <i id="offBtn" class="fas fa-times" v-on:click="turnOffModal"></i>
                 </div>
             </div>
@@ -16,7 +16,7 @@
                     <div class="inputbox id">
                         <div class="name">아이디</div>
                         <input type="text" placeholder="아이디" v-model="email" v-bind:class="getFormStateClass('email')"></div>
-                    <div class="notice">일단 써봄</div>
+                    <div class="notice" v-bind:class="{'visible' : (getEmail.length>0) && !getIsValidEmail}">사용할 수 없는 아이디입니다.</div>
                 </div>
                 <div class="wrapper">
                     <div class="inputbox ps">
@@ -24,7 +24,7 @@
                         <input type="password" placeholder="비밀번호" v-model="password" v-bind:class="getFormStateClass('password')">
                         <!-- <i class="fas" v-bind:class="{'fa-times' : !getIsValidPassword, 'fa-check' : getIsValidPassword}"></i> -->
                     </div>
-                    <div class="notice">일단 써봄</div>
+                    <div class="notice" v-bind:class="{'visible' : (getPassword.length>0) && !getIsValidPassword}">0~00자 영문 소문자, 숫자를 사용하세요.</div>
                 </div>
                 <div class="wrapper">
                     <div class="inputbox ps_check">
@@ -32,15 +32,15 @@
                         <input type="password" placeholder="비밀번호 확인" v-model="passwordCheck"  v-bind:class="getFormStateClass('passwordCheck')">
                         <!-- <i class="fas" v-bind:class="{'fa-times' : !getIsPasswordCheckSame, 'fa-check' : getIsPasswordCheckSame}"></i> -->
                     </div>
-                    <div class="notice">일단 써봄</div>
+                    <div class="notice" v-bind:class="{'visible' : (getPasswordCheck.length>0) && !getIsPasswordCheckSame}">비밀번호가 일치하지 않습니다.</div>
                 </div>
                 <div class="wrapper">
                     <div class="inputbox nickname">
                         <div class="name">닉네임</div>
-                        <input type="text" placeholder="닉네임" disabled>
+                        <input id="nickNameInput" type="text" placeholder="닉네임" disabled>
                         <!-- <i class="fas fa-check"></i> -->
                     </div>  
-                <div class="notice">익명성을 보장하기 위해 닉네임은 장보고가 설정해드려요.</div>
+                <div class="notice always">익명성을 보장하기 위해 닉네임은 장보고가 설정해드려요.</div>
                 </div>
                 <div class="wrapper multiContent">
                     <div class="inputbox age">
@@ -107,7 +107,7 @@
                         <div class="name">아이디</div>
                         <input type="text" placeholder="아이디" v-model="email">
                     </div>
-                    <div class="notice">일단 써봄</div>
+                    <div class="notice">없는 아이디입니다.</div>
                 </div>
                 <div class="wrapper">
                     <div class="inputbox ps">
@@ -115,7 +115,7 @@
                         <input type="password" placeholder="비밀번호" v-model="password" v-on:keyup.enter="signInCompelete">
                         <!-- <i class="fas" v-bind:class="{'fa-times' : !getIsValidPassword, 'fa-check' : getIsValidPassword}"></i> -->
                     </div>
-                    <div class="notice">일단 써봄</div>
+                    <div class="notice">아이디와 비밀번호가 일치하지 않습니다.</div>
                 </div>
                 <div class="wrapper">
                     <div class="submit" v-on:click="signInCompelete">
@@ -142,7 +142,7 @@
 </template>
 
 <script>
-
+import eventBus from './EventBus'
 import { mapState, mapGetters, mapMutations, mapActions } from 'vuex'
 
 export default {
@@ -151,9 +151,13 @@ export default {
  
         }
     },
-    updated() {
-        console.log('updated');
+    created() {
         this.addAgeOption();
+        this.addNickName();
+    },
+    updated() {
+        this.addAgeOption();
+        this.addNickName();
     },
     computed: {
         email: {
@@ -220,7 +224,11 @@ export default {
         },
         ...mapGetters("sign", {
             getSignState: "getSignState",
-            getSignUpState: "getSignUpState"
+            getSignUpState: "getSignUpState",
+        }),
+        ...mapGetters("signin",{
+            getIsValidEmail: "getIsValidEmail",
+            getIsValidPassword: "getIsValidPassword",
         }),
         ...mapGetters("signup", {
             getEmail: "getEmail",
@@ -245,27 +253,43 @@ export default {
         },
         // Sign Up Method
         addAgeOption(){
-            console.log('addAge');
             if(this.getSignState === 0){
                 let select = document.getElementById("ageSelect")
-                var option;
-                option = document.createElement("option");
-                option.selected = true;
-                option.hidden = true;
-                option.text = "출생년도 선택";
-                select.appendChild(option);
-                // <option value="" disabled selected>Select your option</option>
-                for (var i = 12; i <= 50; i++)
-                {
+                if(select !== null){
+                    select.innerHTML="";
+                    var option;
                     option = document.createElement("option");
-                    option.text = i;
+                    option.selected = true;
+                    option.hidden = true;
+                    option.text = "출생년도 선택";
                     select.appendChild(option);
+                    // <option value="" disabled selected>Select your option</option>
+                    for (var i = 12; i <= 50; i++)
+                    {
+                        option = document.createElement("option");
+                        option.text = i;
+                        select.appendChild(option);
+                    }
                 }
             }
         },
+        addNickName(){
+            let input = document.getElementById('nickNameInput');
+            
+            if(input !== null){
+                if(localStorage.getItem('nickName') !== null){
+                    input.value = localStorage.getItem('nickName');
+                return;
+                }
+
+                this.getUserRandomNickName().then((resolve)=>{
+                    input.value = resolve.data;
+                    localStorage.setItem('nickName', resolve.data);
+                })
+            }
+        },
         turnOffModal(){
-            console.log('turnOffModal');
-            this.$emit("turnOffModal");
+            eventBus.$emit("turn-off-sign-modal");
         },
         toggleSignIn(){
             //회원가입 창일 때
@@ -414,6 +438,7 @@ export default {
         }),
         ...mapActions("signup", {
             postSignUpToServer : 'postSignUpToServer',
+            getUserRandomNickName : 'getUserRandomNickName',
         }),
         ...mapActions("signin", {
             postSignInToServer : 'postSignInToServer',
@@ -449,6 +474,7 @@ export default {
   border-radius: 2px;
   box-shadow: 0 2px 8px rgba(0, 0, 0, .33);
   transition: all .3s ease;
+  border-radius: 10px;
 }
 
 .modal-header h3 {
@@ -488,6 +514,10 @@ export default {
 .wrapper{
     margin: 20px 32px;
 }
+#header > span{
+    font-size: 24px;
+    color: #77c017;
+}
 .multiContent{
     display: flex;
     justify-content: space-between;
@@ -505,12 +535,6 @@ export default {
 div[slot="header"] > .wrapper{
     color: #828282;
     text-align: center;
-}
-#signin{
-    font-size: 24px;
-}
-#signup{
-    font-size: 24px;
 }
 #offBtn{
     float: right;
@@ -548,12 +572,20 @@ div[slot="header"] > .wrapper{
     background-color: #e8e8e8;
 }
 .notice{
-    color: #828282;
+    color: #ff0000;
     font-size: 14px;
     margin-top: 8px;
     display: inline-block; 
     position: relative;
     left: 110px;
+    visibility: hidden;
+}
+.always{
+    color: #bdbdbd;
+    visibility: visible;
+}
+.visible{
+    visibility: visible;
 }
 .age{
     padding: 10px 0px 10px 20px;

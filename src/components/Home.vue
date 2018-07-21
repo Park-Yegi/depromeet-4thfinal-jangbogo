@@ -1,14 +1,12 @@
 <template>
   <div id="wrapper">
-<!--     <button v-on:click="signup" style="width:100px; height:100px;"></button>
-    <span><router-link v-bind:to="{ name: 'counter-page' }">Counter</router-link></span>
+    <!-- <button v-on:click="signup" style="width:100px; height:100px;"></button>
+    <span><router-link v-bind:to="{ name: 'counter-page' }">Counter</router-link></span> -->
           
-    <SignModal v-if="showModal" @close="showModal = false">          
-    </SignModal> -->
-
-
+  
     <Top></Top>
     <NewRoom v-if="showNewRoom" @close="showNewRoom=false"></NewRoom>
+    <SignModal v-if="showSignPage" @close="showSignPage = false"></SignModal> 
     <!-- <tag></tag> -->
     <!-- <map></map> -->
     <!-- <footer></footer> -->
@@ -33,24 +31,39 @@ import TagList from './TagList.vue'
 import Top from './Top.vue'
 import NewRoom from './NewRoom.vue'
 import eventBus from './EventBus.vue'
+import { mapState, mapGetters, mapMutations } from 'vuex'
 
 export default {
   name: 'home',
   created: function() {
-    eventBus.$on('add-room')
-    eventBus.$on('click-new-room')
+    eventBus.$on('add-room', ()=>{})
+    eventBus.$on('click-new-room', ()=>{})
+    eventBus.$on('click-sign-modal', (state)=>{this.turnOnModal(state)});
+    eventBus.$on('turn-off-sign-modal', ()=>{this.turnOffModal()});
   },
   components: { Footer, FriendList, Tag, SignModal, Top, TagList, NewRoom, Location },
   data(){
     return{
-      showModal : false,
+      showSignPage : false,
       items: ['돔', '성별', '고등어', '김치찌개', '가쓰오부시', '돼지김치찌개', '고등어', '김치찌개', '돔', '성별', '고등어', '김치찌개', '가쓰오부시'],
       showNewRoom: false
     }
   },
   methods:{
-    signup(){
-      this.showModal = !this.showModal
+    ...mapMutations('sign',{
+      setSignState : 'setSignState'
+    }),
+    ...mapMutations('signin',{
+      initSignInState : 'initSignInState'
+    }),
+    turnOffModal(){
+      console.log("here");
+      this.showSignPage = false;
+      this.initSignInState();
+    },
+    turnOnModal(state){
+      this.showSignPage = true;
+      this.setSignState(state);
     },
     clickNewRoom: function() {
       console.log("Click!!!!!!!!!")

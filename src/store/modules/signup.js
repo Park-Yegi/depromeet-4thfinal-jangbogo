@@ -1,4 +1,5 @@
 import axios from 'axios';
+import selectTag from './selectTag';
 
 export default{
     namespaced : true,
@@ -182,25 +183,27 @@ export default{
               })
         },
         getUserRandomNickName ( context ){
-            // 유저의 랜덤 닉네임을 받기 위한 server api call
-            console.log('getUserRandomNickName')
-            let baseURI = 'http://52.78.159.170/auth/nickname';
-            // let data = {};
-            axios.get(baseURI, {
-                headers :
-                {
-                  'Content-Type': 'application/json'
-                }
-              })
-              .then((result) => {
-                  console.log("success")
-                  console.log(result)
-
-              })
-              .catch((error) => {
-                    console.log("fail")
-                  console.log(error)
-              })
+            return new Promise((resolve, reject)=>{
+                // 유저의 랜덤 닉네임을 받기 위한 server api call
+                console.log('getUserRandomNickName')
+                let baseURI = 'http://52.78.159.170/auth/nickname';
+                // let data = {};
+                axios.get(baseURI, {
+                    headers :{
+                      'Content-Type': 'application/json'
+                    }
+                  })
+                  .then((result) => {
+                      console.log("success")
+                      console.log(result)
+                      resolve(result);
+                  })
+                  .catch((error) => {
+                      console.log("fail")
+                      console.log(error)
+                      reject(error);
+                  })
+            })
         },
         // 회원가입 server api call
         postSignUpToServer ( context )
@@ -212,17 +215,16 @@ export default{
                	"password" : context.state.password,
                	"gender" : context.state.sex? "gender": "female", "gender": "male",
                	"address" : context.state.userAddress,
-               	"age" : context.state.age,
-               	"shoppingType" : ['이거 어떻게 받을지 생각'],
-                "nickname" : context.dispatch('getUserRandomNickName')
+                "age" : context.state.age,
+                "shoppingType" : selectTag.state.selected,
+                "nickname" : localStorage.getItem('nickName')
             };
 
             console.log(data);
             
             axios.post(baseURI, JSON.stringify(data), {
-                headers :
-                {
-              	'Content-Type': 'application/json'
+                headers: {
+              	    'Content-Type': 'application/json'
                 }
             })
             .then((result) => {

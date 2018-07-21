@@ -1,12 +1,12 @@
 <template>
 	<div id="wrapper">
 		<button id="makeRoom" @click="clickNewRoom()">방만들기</button>
-		<button id="loginButton">로그인</button>
-		<button id="chatButton">채팅</button>
+    <!-- 회원가입 어디에 넣어야할까요? -->
+		<button id="loginButton" @click="clickSignModal(1)">로그인</button>
+    <router-link id="chatButton" v-bind:to="{ name: 'Chat' }">채팅</router-link>
 		<button id="homeButton">홈</button>
 	</div>
 </template>
-
 
 <script type="text/javascript">
 import eventBus from './EventBus.vue'
@@ -16,11 +16,13 @@ export default {
   methods: {
     clickNewRoom: function() {
       eventBus.$emit('click-new-room')
+    },
+    clickSignModal(state){
+      eventBus.$emit('click-sign-modal', state)
     }
   }
 }
 </script>
-
 
 <style scoped>
 @import url(https://cdn.rawgit.com/moonspam/NanumSquare/master/nanumsquare.css);

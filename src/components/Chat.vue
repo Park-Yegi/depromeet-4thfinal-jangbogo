@@ -77,11 +77,24 @@
 
 <script>
 // import header from "./header"
+import {mapState, mapGetters, mapMutations, mapActions} from 'vuex';
 
 export default {
     components:{
         // header,
-        
+    },
+    created(){
+        this.getRoomData();
+    },
+    computed:{
+        // ...mapGetters("chat",{
+
+        // });
+    },
+    methods:{
+        ...mapActions("chat", {
+            getRoomData : 'getRoomData',
+        })
     }
 }
 </script>

@@ -13,8 +13,14 @@ export default{
         getEmail( state ){
             return state.email;
         },
+        getIsValidEmail( state ){
+            return state.isValidEmail;
+        },
         getPassword( state ){
             return state.password;
+        },
+        getIsValidPassword( state ){
+            return state.isValidPasword;
         },
         getEmailFormFull( state ){
             return state.isEmailFormFull;
@@ -93,6 +99,8 @@ export default{
             .then((result) => {
                 console.log("success")
                 console.log(result)
+                localStorage.setItem('token', result.data.token);
+                console.log(localStorage.getItem('token'));
             })
             .catch((error) => {
                 console.log("fail")
